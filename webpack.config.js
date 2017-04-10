@@ -1,18 +1,22 @@
-var path = require('path')
-var webpack = require('webpack')
+var webpack = require('webpack');
+var path = require('path');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var CleanWebpackPlugin = require('clean-webpack-plugin');
+
+var inProduction = (process.env.NODE_ENV === 'production');
+var inHot = (process.env.NODE_ENV === 'hot');
 
 module.exports = {
     entry: {
         app: [
             './src/main.js',
-            './src/main.scss'
+            './src/assets/css/main.scss'
         ]
     },
     output: {
-        path: path.resolve(__dirname, './dist'),
-        publicPath: '/dist/',
-        filename: '[name].js'
+        path: path.resolve(__dirname, './build'),
+        filename: '[name].js',
+        /*filename: '[name].[chunkhash].js'*/
     },
     module: {
         rules: [
@@ -38,66 +42,54 @@ module.exports = {
                 })
             },
             {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
+
             },
             {
                 test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/,
-                loader: 'file-loader',
-                options: {
-                    name: './images/[name].[ext]?[hash]'
-                    //                name: './images/[name].[hash].[ext]'
-
+                //use: "file-loader?name=[name].[ext]&publicPath=./dist&outputPath=/images/",//only vue
+                //use: "file-loader?name=[name].[ext]&publicPath=./&outputPath=images/",//only main.scss
+                use: "file-loader?name=[name].[ext]&publicPath=./&outputPath=images/",
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: "babel-loader",
+                query: {
+                    presets: ["es2015"]
                 }
             }
         ]
     },
     plugins: [
         new ExtractTextPlugin('[name].css'),
-        function () {
-            this.plugin('done', stats => {
-                require('fs').writeFileSync(
-                    path.join(__dirname, 'dist/manifest.json'),
-                    JSON.stringify(stats.toJson().assetsByChunkName)
-                );
-            });
-        }
-    ],
-    resolve: {
-        alias: {
-            'vue$': 'vue/dist/vue.esm.js'
-        }
-    },
-    devServer: {
-        historyApiFallback: true,
-        noInfo: true
-    },
-    performance: {
-        hints: false
-    },
-    devtool: '#eval-source-map'
-}
-
-if (process.env.NODE_ENV === 'production') {
-    module.exports.devtool = '#source-map'
-    // http://vue-loader.vuejs.org/en/workflow/production.html
-    module.exports.plugins = (module.exports.plugins || []).concat([
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: '"production"'
-            }
-        }),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
-            compress: {
-                warnings: false
-            }
-        }),
+        /*new ExtractTextPlugin('[name].[chunkhash].css'),*/
         new webpack.LoaderOptionsPlugin({
-            minimize: true
-        })
-    ])
+            minimize: inProduction
+        }),
+        new CleanWebpackPlugin(['dist', 'build'], {
+            root: __dirname,
+            verbose: true,
+            dry: false
+        }),
+
+        function (){
+            if(!inHot){
+                this.plugin('done', stats=>{
+                    require('fs').writeFileSync(
+                        path.join(__dirname, 'build/manifest.json'),
+                        JSON.stringify(stats.toJson().assetsByChunkName)
+                    );
+                });
+            }
+
+        }
+    ]
 }
 
-
+if (inProduction) {
+    module.exports.plugins.push(
+        new webpack.optimize.UglifyJsPlugin()
+    );
+}
