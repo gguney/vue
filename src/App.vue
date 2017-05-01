@@ -1,56 +1,45 @@
 <template>
     <div id="app">
-        <!--<img class="logo">-->
-        <h1>{{ message }}</h1>
-        <p>Deneme</p>
-        <p>{{ count }}</p>
-        <p>
-            <button @click="increment">+</button>
-            <button @click="decrement">-</button>
-        </p>
-        <Sidebar></Sidebar>
+        <h1>This is simple Vue app with Vuex and Component support.</h1>
+        <ul>
+            <li>
+                <button @click="changeVariable">Change Directly By State Action Button</button>
+                <AComponent></AComponent>
+            </li>
+            <li>
+                <button @click="changeByFunction">Change By Component Function Button</button><br>
+                <input type="text" v-model="message"/><br>
+                This is var from state: {{ $store.state.stateVariableTwo }}<br>
+                This is message from app: {{ message }}
+
+            </li>
+        </ul>
+
+
+        <br>
     </div>
 </template>
 <script>
-    import Sidebar from './components/Sidebar.vue'
-
+    import AComponent from './components/AComponent.vue'
+    import {mapActions} from 'vuex'
     export default {
-        components: {Sidebar},
-        name: 'app',
+        components: {
+            AComponent
+        },
         data () {
             return {
-                message: 'Vue Starter',
-                count: 0
+                message: 'Foo'
             }
         },
-    computed: {
-        count () {
-            return store.state.count
+        methods: {
+            ...mapActions([ 'changeVariable', 'changeVariableWithParam']),
+            changeByFunction(){
+                this.changeVariableWithParam(this.message);
+            }
         }
-    },
-    methods: {
-        increment () {
-            this.count++;
-        },
-        decrement () {
-            this.count--;
 
-        }
     }
-    }
-
-
 </script>
 <style lang="scss" scoped>
-    #app {
-        font-family: 'Avenir', Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-align: center;
-        margin-top: 60px;
-        color: #42b983;
-    }
-    h1{
-        color: bisque;
-    }
+
 </style>

@@ -9,7 +9,7 @@ var inHot = (process.env.NODE_ENV === 'hot');
 module.exports = {
     entry: {
         app: [
-            './src/main.js',
+            './src/app.js',
             './src/assets/css/main.scss'
         ]
     },

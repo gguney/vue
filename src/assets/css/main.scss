@@ -1,10 +1,8 @@
-$primary: #a2ff3f;
+@import './colors.scss';
+@import './mixins.scss';
 
-
-body{
-    background: url('../images/freedom.jpg');
-}
-
-.logo{
-    content: url('../images/logo.png');
+#app {
+  padding: 0px;
+  height: 80vh;
+  @include border($primary);
 }
