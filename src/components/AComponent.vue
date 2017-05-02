@@ -2,6 +2,10 @@
     <div class="template-class">
        {{ $store.state.stateVariable }}
         <br>
+        This is a prop variable: {{ propVariable }}
+        <br>
+        <input v-model="message"/>
+        This is a computed variable: {{ reversedMessage }}
     </div>
 
 </template>
@@ -13,11 +17,20 @@
         },
         data () {
             return {
-                message: 'This is a message from menu component.'
+                message: 'MessageMenu'
+            }
+        },
+        props:[
+            'propVariable'
+        ],
+        computed:{
+            reversedMessage: function(){
+                return this.message.split('').reverse().join('');
             }
         },
         mounted: function(){
         },
+
 
     }
 </script>

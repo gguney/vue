@@ -4,7 +4,7 @@
         <ul>
             <li>
                 <button @click="changeVariable">Change Directly By State Action Button</button>
-                <AComponent></AComponent>
+                <AComponent propVariable="Prop Variable Value"></AComponent>
             </li>
             <li>
                 <button @click="changeByFunction">Change By Component Function Button</button><br>
